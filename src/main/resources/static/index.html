@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        #resultSection {
+            display: none;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>AI Resume Analyzer</h2>
+
+    <!-- FORM SECTION -->
+    <div id="formSection">
+        <form id="resumeForm">
+
+            <input type="text" name="candidateName" placeholder="Candidate Name" required>
+
+            <input type="email" name="email" placeholder="Email" required>
+
+            <input type="file" name="file" accept="application/pdf" required>
+
+            <textarea name="jobDescription" placeholder="Paste Job Description" required></textarea>
+
+            <button type="submit">Analyze Resume</button>
+
+        </form>
+    </div>
+
+    <!-- RESULT SECTION -->
+    <div id="resultSection">
+        <div class="score" id="resultText"></div>
+        <button onclick="analyzeAnother()">Analyze Another Resume</button>
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("resumeForm").addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/api/resume/analyze", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(result => {
+
+        document.getElementById("formSection").style.display = "none";
+        document.getElementById("resultSection").style.display = "block";
+
+        document.getElementById("resultText").innerText =
+            "Match Percentage: " + result.matchPercentage.toFixed(2) + "%";
+
+    })
+    .catch(error => {
+        alert("Error analyzing resume");
+        console.error(error);
+    });
+});
+
+function analyzeAnother() {
+
+    document.getElementById("resumeForm").reset();
+
+    document.getElementById("resultSection").style.display = "none";
+    document.getElementById("formSection").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
